@@ -37,8 +37,28 @@ void setup()
   pinMode(stepPin2, OUTPUT);
   pinMode(dirPin2, OUTPUT);
 
+  FILE *file = fopen("jcode.txt", "r");
 
-  // file reading
+  float x;
+  float y;
+  float z;
+  float g;
+  int c; 
+
+  if (file == NULL)
+  {
+      perror("Error opening file");
+      return 1;
+  }
+  char line[100];
+  while(!feof(file)){
+      fgets(line, sizeof(line), file);
+      sscanf(line, "G%d ", &c);
+      if (c == 1){
+          sscanf(line, "G1 X%f Y%f Z%f", &x, &y, &z);
+      }
+      
+  }
   rotate(x, y, z);
 
 }
