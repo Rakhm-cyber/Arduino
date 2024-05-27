@@ -1,6 +1,9 @@
 #include <math.h>
 #include <stdio.h>
+#include "SPI.h"
+#include "SD.h"
 
+const int chipSelect = 10; 
 const int dirPinPolar = 3;
 const int dirPinAzimut = 5;
 const int stepPinPolar = 2;
@@ -45,24 +48,42 @@ void rotatePolar(float angle)
 }
 
 void setup()
-{
+{ 
+  Serial.begin(9600);
+  pinMode(SS, OUTPUT);
   pinMode(stepPinPolar, OUTPUT);
   pinMode(dirPinPolar, OUTPUT);
   pinMode(stepPinAzimut, OUTPUT);
   pinMode(dirPinAzimut, OUTPUT);
+  
+  float x = 0;
+  float y = 0;
+  float z = 0;
+  int c;
+  char line[256];
 
-  float x;
-  float y;
-  float z;
-  float g;
-  int c; 
-
-  //sscanf(line, "G%d ", &c);
-  if (c == 1)
-  {
-    //sscanf(line, "G1 X%f Y%f Z%f", &x, &y, &z);
+  while (!SD.begin(SPI_HALF_SPEED, 4)) {
+    Serial.println("initialization failed");
   }
 
+  File gcode = SD.open("gcode.txt");
+
+  if (gcode) {
+    fgets(line, dataFile, 256);
+    dataFile.close();
+    Serial.println("Success!");
+  }
+  else { 
+    Serial.println("error opening file"); 
+  }
+  
+  sscanf(line, "G%d ", &c);
+  if (c == 1)
+  {
+    sscanf(line, "G1 X%f Y%f Z%f", &x, &y, &z);
+    Serial.println("fff");
+  }
+  
   float radius = sqrt(x*x + y*y + z*z);
   float polar = (acos(z/radius) * 180) / M_PI;
   float azimut = (atan2(y, x) * 180) / M_PI;
@@ -76,7 +97,7 @@ void setup()
     rotateAzimut(azimut);
   }
 }
-
+   
 void loop()
 {
  
