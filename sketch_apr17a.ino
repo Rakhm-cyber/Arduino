@@ -81,7 +81,6 @@ void setup()
   if (c == 1)
   {
     sscanf(line, "G1 X%f Y%f Z%f", &x, &y, &z);
-    Serial.println("fff");
   }
   
   float radius = sqrt(x*x + y*y + z*z);
